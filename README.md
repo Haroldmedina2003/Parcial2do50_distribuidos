@@ -12,3 +12,7 @@ Subir una imagen
 ir al puerto "http://localhost:15672"
 Usuario: user
 Contraseña: pass
+
+
+
+
