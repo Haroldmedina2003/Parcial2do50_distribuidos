@@ -1,0 +1,55 @@
+version: '3.9'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: pass
+    volumes:
+      - rabbit_data:/var/lib/rabbitmq
+    networks:
+      - net
+
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./uploads:/app/uploads
+    depends_on:
+      - rabbitmq
+    networks:
+      - net
+
+  resize_worker:
+    build: .
+    command: node workers/resizeWorker.js
+    depends_on:
+      - rabbitmq
+    networks:
+      - net
+
+  watermark_worker:
+    build: .
+    command: node workers/watermarkWorker.js
+    depends_on:
+      - rabbitmq
+    networks:
+      - net
+
+  detect_worker:
+    build: .
+    command: node workers/detectWorker.js
+    depends_on:
+      - rabbitmq
+    networks:
+      - net
+
+volumes:
+  rabbit_data:
+
+networks:
+  net:
